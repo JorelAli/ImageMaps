@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
 
 	private ImageHashStorage storage;
-	private static HashMap<String, Short> maps;
+	public static HashMap<String, Short> maps;
 	
 	@Override
 	public void onEnable() {
@@ -66,18 +66,38 @@ public class Main extends JavaPlugin implements Listener {
 							URL url = new URL(args[0]);
 							BufferedImage image = ImageIO.read(url);  
 							
-							
+							boolean exists = false;
 							try {
-								Bukkit.getLogger().info(new ImageHashing(image).getHash());
+								ImageHashing hashing = new ImageHashing(image);
+								if(maps.containsKey(hashing.getHash())) {
+									exists = true;
+									String hash = hashing.getHash();
+									Bukkit.getScheduler().scheduleSyncDelayedTask(getInstance(), new Runnable() {
+
+										@Override
+										public void run() {
+											player.getInventory().addItem(new ItemStack(Material.MAP, 1, maps.get(hash)));
+											player.sendMessage("Here you go :D");
+											return;
+										}
+										
+									});
+								}
 							} catch (NoSuchAlgorithmException e) {
 								e.printStackTrace();
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
 							
+							if(exists)
+								return;
+							
 							
 							ItemStack is = new ItemStack(Material.MAP);
 							MapView map = Bukkit.createMap(player.getWorld());
+							
+							maps.put(new ImageHashing(image).getHash(), map.getId());
+							
 							map.getRenderers().clear();
 							
 							MapRenderer renderer = new MapRenderer() {
@@ -103,6 +123,9 @@ public class Main extends JavaPlugin implements Listener {
 							player.sendMessage("Could not access URL :/");
 						} catch (IOException e) {
 							player.sendMessage("Could not render image :/");
+						} catch (NoSuchAlgorithmException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 						
 						
