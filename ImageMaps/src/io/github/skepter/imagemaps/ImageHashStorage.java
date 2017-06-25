@@ -8,14 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ImageHashStorage {
@@ -34,15 +31,15 @@ public class ImageHashStorage {
 		}
 	}
 
-	public Set<Block> get() {
-		Set<Block> blocks = new HashSet<Block>();
+	public HashMap<String, Short> get() {
+		HashMap<String, Short> map = new HashMap<String, Short>();
 		if (getFromFile() == null) {
-			return blocks;
+			return map;
 		}
 		for (String str : getFromFile()) {
-			blocks.add(stringToBlock(str));
+			map.put(str.split(":")[0], Short.valueOf(str.split(":")[1]));
 		}
-		return blocks;
+		return map;
 	}
 
 	private List<String> getFromFile() {
@@ -62,7 +59,7 @@ public class ImageHashStorage {
 		return null;
 	}
 
-	public void store(Map<String, Integer> maps) {
+	public void store(Map<String, Short> maps) {
 		file.delete();
 		try {
 			file.createNewFile();

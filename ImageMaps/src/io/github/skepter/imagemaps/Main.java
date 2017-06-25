@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,27 +25,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
 
-	private static HashMap<String, Integer> maps;
+	private ImageHashStorage storage;
+	private static HashMap<String, Short> maps;
 	
 	@Override
 	public void onEnable() {
 		getCommand("map").setExecutor(this);
 		getServer().getPluginManager().registerEvents(this, this);
-		
-		maps = new HashMap<String, Integer>();
-		for(Block block : locations.get()) {
-			blocks.put(block, showParticles(block.getLocation()));
-		}
+		storage = new ImageHashStorage(this);
+		maps = storage.get();
 
 	}
 	
 	@Override
 	public void onDisable() {
+		storage.store(maps);
 	}
 	
 	@EventHandler
 	public void onWorldSave(WorldSaveEvent event) {
-		
+		storage.store(maps);
 	}
 	
 	public static Main getInstance() {
