@@ -1,0 +1,10 @@
+name: ImageMaps
+main: io.github.skepter.imagemaps.Main
+version: 1.0
+description: Add custom images on maps
+author: Skepter
+website: http://skepter.github.io/
+
+commands:
+   map:
+     description: Adds a custom image to a map
